@@ -11,7 +11,7 @@ toc: true
 if (!require("pacman")) 
   install.packages("pacman")
 
-pacman::p_load(tidyverse, ggridges, glue, scales, ggthemes, openintro, ggrepel, dsbox, janitor, fs)
+pacman::p_load(tidyverse, ggforce,ggridges, glue, scales, ggthemes, openintro, ggrepel, dsbox, janitor, fs)
 
 # set theme for ggplot2
 ggplot2::theme_set(ggplot2::theme_minimal(base_size = 14))
@@ -305,5 +305,27 @@ ggplot(housing_subset, aes(x = year_quarter, y = price, group = 1)) +
 ```
 
 ## 4 - Expect More. Plot More.
+
+``` {r}
+#| warning: false
+#| message: false
+#| label: Question 4
+
+
+# Plot
+ggplot() +
+  geom_circle(aes(x0 = 0, y0 = 0, r = 3, fill = "#CC0000"), 
+              color = NA, show.legend = FALSE) +
+  geom_circle(aes(x0 = 0, y0 = 0, r = 2, fill = "white"), 
+              color = NA, show.legend = FALSE) +
+  geom_circle(aes(x0 = 0, y0 = 0, r = 1, fill = "#CC0000"), 
+              color = NA, show.legend = FALSE) +
+  scale_fill_identity() +
+  coord_fixed() +
+  theme_void() +
+    annotate("text", x = 0, y = -4, label = "TARGET", color = "#CC0000", size = 10, fontface = "bold") +
+  annotate("text", x = 1.6, y = -4.2, label = "\u00AE", color = "#CC0000", size = 6)
+```
+Still Struggling to make this plot smaller aspect ratio...
 
 ## 5 - Mirror, mirror on the wall, who’s the ugliest of them all?
