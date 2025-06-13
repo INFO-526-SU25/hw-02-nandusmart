@@ -11,7 +11,7 @@ toc: true
 if (!require("pacman")) 
   install.packages("pacman")
 
-pacman::p_load(tidyverse, ggforce,ggridges, glue, scales, ggthemes, openintro, ggrepel, dsbox, janitor, fs)
+pacman::p_load(tidyverse, ggforce,palmerpenguins,ggridges, glue, scales, ggthemes, openintro, ggrepel, dsbox, janitor, fs)
 
 # set theme for ggplot2
 ggplot2::theme_set(ggplot2::theme_minimal(base_size = 14))
@@ -311,8 +311,6 @@ ggplot(housing_subset, aes(x = year_quarter, y = price, group = 1)) +
 #| message: false
 #| label: Question 4
 
-
-# Plot
 ggplot() +
   geom_circle(aes(x0 = 0, y0 = 0, r = 3, fill = "#CC0000"), 
               color = NA, show.legend = FALSE) +
@@ -329,3 +327,22 @@ ggplot() +
 Still Struggling to make this plot smaller aspect ratio...
 
 ## 5 - Mirror, mirror on the wall, who’s the ugliest of them all?
+
+``` {r}
+#| warning: false
+#| message: false
+#| label: Question 5
+
+ggplot(penguins, aes(x = bill_length_mm, y = flipper_length_mm, size = body_mass_g)) +
+  geom_point(aes(color = island, shape = species), alpha = 0.8) +
+  geom_text(aes(label = species), size = 6, angle = 90, color = "orange3", hjust = 0.5, vjust = -1) +
+  geom_mark_circle(aes(label = sex), fill = "red2", color = "cyan", size = 1, expand = unit(2, "mm")) +
+  labs(
+    title = "IMPORTANT PLOT FOR PENGUINS",
+    subtitle = "Species vs Body Mass vs Island",
+    x = "X-Axis",
+    y = "???",
+    caption = "Ugliest Ever"
+  ) 
+
+```
