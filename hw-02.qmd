@@ -71,7 +71,9 @@ This plot, shows the distribution of Airbnb review scores across different neigh
 
 ## 2 - Foreign Connected PACs
 
-``` {r message=FALSE}
+``` {r}
+#| warning: false
+#| message: false
 #| label: Question 2
 # get a list of files with "Foreign Connected PAC" in their names
 list_of_files <- dir_ls(path = "data", regexp = "Foreign Connected PAC")
@@ -112,7 +114,7 @@ uk_pac <- updated_pac_data |>
   filter(country_of_origin == "UK") |> group_by(year, party) |>
   summarise(total_amount = sum(amount), .groups = "drop")
 
-glimpse(uk_pac)
+#glimpse(uk_pac)
 
 ggplot(uk_pac, aes(x = year, y = total_amount / 1000000, color = party)) +
   geom_line(linewidth = 1.1) +
@@ -125,7 +127,9 @@ ggplot(uk_pac, aes(x = year, y = total_amount / 1000000, color = party)) +
   scale_color_manual(name = "Party", values = c("Democrat" = "blue", "Republican" = "red")) 
 
 ```
-``` {r message=FALSE}
+``` {r}
+#| warning: false
+#| message: false
 #| label: Question 2 Add-On
 
 Mexico_pac <- updated_pac_data |>
