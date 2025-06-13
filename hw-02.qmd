@@ -125,6 +125,7 @@ ggplot(uk_pac, aes(x = year, y = total_amount / 1000000, color = party)) +
   ) + 
   scale_y_continuous(labels = dollar_format(prefix = "$", suffix = "M")) + 
   scale_color_manual(name = "Party", values = c("Democrat" = "blue", "Republican" = "red")) 
+  
 
 ```
 ``` {r}
@@ -148,7 +149,7 @@ ggplot(Mexico_pac, aes(x = year, y = total_amount / 1000000, color = party)) +
   scale_color_manual(name = "Party", values = c("Democrat" = "blue", "Republican" = "red")) +
   scale_y_continuous(labels = dollar_format(prefix = "$", suffix = "M"))
 ```
-
+Considered Mexico for the follow-up plot. Unlike UK, Mexico has been traditionally a low player in terms of $ value also seems, there is sharp increase for Republicansaround 2008-10 while also faing sharp decline in later years
 
 ## 3 - Median housing prices in the US
 
