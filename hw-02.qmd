@@ -171,9 +171,12 @@ recessions <- recessions |>
   )
 
 y_breaks <- seq(0, 400000, by = 40000)
+custom_hlines <- c(0, 40000, 80000, 120000, 160000, 200000, 240000, 280000, 320000, 360000, 400000)
+
 # Plot
 ggplot(housing, aes(x = date, y = price)) +
   geom_line(color = "royalblue3", linewidth = 1.2) +
+    geom_hline(yintercept = custom_hlines, color = "grey90") +  
   scale_y_continuous(
     labels = scales::comma,
     breaks = y_breaks,  
@@ -198,10 +201,9 @@ ggplot(housing, aes(x = date, y = price)) +
     
     plot.subtitle = element_text(size = 12, hjust = 0),
     plot.caption = element_text(size = 9),
-    panel.grid.major.x = element_blank(), 
-    panel.grid.minor.x = element_blank()   
-  )+
-  theme_minimal(base_size = 14) 
+    panel.grid.major = element_blank(),
+    panel.grid.minor = element_blank()
+  )
 ```
 ``` {r}
 #| warning: false
@@ -228,6 +230,7 @@ ggplot(housing, aes(x = date, y = price)) +
             inherit.aes = FALSE, fill = "grey", alpha = 0.4) +
   # Plot the line on top
   geom_line(color = "royalblue3", size = 1) +
+  geom_hline(yintercept = custom_hlines, color = "grey90") +
   scale_y_continuous(
     labels = scales::comma,
     breaks = y_breaks,  
@@ -252,8 +255,8 @@ ggplot(housing, aes(x = date, y = price)) +
     plot.subtitle = element_text(size = 12, hjust = 0),
     plot.caption = element_text(size = 9),
     
-    panel.grid.major.x = element_blank(), 
-    panel.grid.minor.x = element_blank()  
+    panel.grid.major = element_blank(), 
+    panel.grid.minor = element_blank()  
   )
 
 ```
