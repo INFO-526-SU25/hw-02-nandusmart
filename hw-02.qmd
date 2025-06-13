@@ -1,18 +1,73 @@
 ---
 title: "HW 02"
-author: "INSERT YOUR NAME HERE"
+author: "Nandakumar Kuthalaraja"
 format: 
   html:
     embed-resources: true
 toc: true
 ---
 
+```{r setup}
+if (!require("pacman")) 
+  install.packages("pacman")
+
+pacman::p_load(tidyverse, ggridges, glue, scales, ggthemes, openintro, ggrepel, dsbox, janitor, fs)
+
+# set theme for ggplot2
+ggplot2::theme_set(ggplot2::theme_minimal(base_size = 14))
+
+# set width of code output
+options(width = 85)
+
+# set figure parameters for knitr
+knitr::opts_chunk$set(
+  fig.width = 7,        # 7" width
+  fig.asp = 0.618,      # the golden ratio
+  fig.retina = 3,       # dpi multiplier for displaying HTML output on retina
+  fig.align = "center", # center align figures
+  dpi = 300             # higher dpi, sharper image
+)
+
+
+
+###All responses are in comments within the code****
+
+```
+
 ## 1 - A new day, a new plot, a new geom
 
 ```{r}
-#| label: label-me-1
+#| label: Question 1
+
+#read from dsbox pkg dataset
+#glimpse(edibnb)
+
+edibnb <- edibnb |>
+  filter(!is.na(neighbourhood), !is.na(review_scores_rating))
+median_rating <- edibnb |>
+  group_by(neighbourhood) |>
+  summarise(median_review_score = median(review_scores_rating, na.rm = TRUE))|>
+  arrange(median_review_score)# got the median review score per neighborhood
+  
+#glimpse(median_rating)
+
+neighborhood_order <- edibnb |>
+  mutate(neighbourhood = factor(neighbourhood,  levels = median_rating$neighbourhood))
+
+ggplot(neighborhood_order, aes(x = review_scores_rating, y = neighbourhood)) +
+  geom_density_ridges(alpha = 0.7) +
+  theme(legend.position = "none",
+        plot.subtitle = element_text(size = 8)) + 
+  labs(
+    title = "Airbnb Review of Edinburgh Neighborhood",
+    x = "Review Score (0–100)",
+    y = "Neighborhood",
+    subtitle = "DensityRidge Plot"
+  )
 
 ```
+This plot, shows the distribution of Airbnb review scores across different neighborhoods in Edinburgh. Each ridge represents a neighborhood and illustrates how review scores are spread out for listings in that area. 
+The highest scoring neighborhoods tend to have a "taller" distribution curve, implying a tighter spread of high review scores compared to the bottom few.
 
 ## 2 - Foreign Connected PACs
 
@@ -23,8 +78,6 @@ toc: true
 
 ## 3 - Median housing prices in the US
 
-
 ## 4 - Expect More. Plot More.
-
 
 ## 5 - Mirror, mirror on the wall, who’s the ugliest of them all?
