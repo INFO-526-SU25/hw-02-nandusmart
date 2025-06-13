@@ -52,7 +52,7 @@ median_rating <- edibnb |>
 #glimpse(median_rating)
 
 neighborhood_order <- edibnb |>
-  mutate(neighbourhood = factor(neighbourhood,  levels = median_rating$neighbourhood))
+  mutate(neighbourhood = factor(neighbourhood,  levels = median_rating$neighbourhood)) #ordering
 
 ggplot(neighborhood_order, aes(x = review_scores_rating, y = neighbourhood)) +
   geom_density_ridges(alpha = 0.7) +
@@ -66,15 +66,85 @@ ggplot(neighborhood_order, aes(x = review_scores_rating, y = neighbourhood)) +
   )
 
 ```
-This plot, shows the distribution of Airbnb review scores across different neighborhoods in Edinburgh. Each ridge represents a neighborhood and illustrates how review scores are spread out for listings in that area. 
-The highest scoring neighborhoods tend to have a "taller" distribution curve, implying a tighter spread of high review scores compared to the bottom few.
+
+This plot, shows the distribution of Airbnb review scores across different neighborhoods in Edinburgh. Each ridge represents a neighborhood and illustrates how review scores are spread out for listings in that area. The highest scoring neighborhoods tend to have a "taller" distribution curve, implying a tighter spread of high review scores compared to the bottom few.
 
 ## 2 - Foreign Connected PACs
 
-```{r}
-#| label: label-me-2
+``` {r message=FALSE}
+#| label: Question 2
+# get a list of files with "Foreign Connected PAC" in their names
+list_of_files <- dir_ls(path = "data", regexp = "Foreign Connected PAC")
+
+# read all files and bind
+pac <- read_csv(list_of_files, id = "year")
+
+# Clean the column names
+cleaned_pac <- clean_names(pac)|>
+  separate(`country_of_origin_parent_company`, into = c("country_of_origin", "parent_company"),
+           sep = "/") |>
+  mutate(
+  yearStr = str_split(year, "-", simplify = TRUE)[, 2],
+  clean_year_string = str_remove(yearStr, fixed(".csv")),
+  year = as.integer(clean_year_string),
+  repubs = as.numeric(str_remove(repubs, "\\$")),
+  dems = as.numeric(str_remove(dems, "\\$"))
+) |>
+  select(-yearStr, -clean_year_string, -total)
+
+#glimpse(cleaned_pac)
+
+updated_pac_data <- cleaned_pac |>
+  pivot_longer(
+    cols = c(dems, repubs),      
+    names_to = "party",           
+    values_to = "amount"          
+  )
+
+updated_pac_data <- updated_pac_data |>
+  mutate(
+    party = case_when(
+      party == "dems" ~ "Democrat",
+      party == "repubs" ~ "Republican"
+    )
+  )
+uk_pac <- updated_pac_data |>
+  filter(country_of_origin == "UK") |> group_by(year, party) |>
+  summarise(total_amount = sum(amount), .groups = "drop")
+
+glimpse(uk_pac)
+
+ggplot(uk_pac, aes(x = year, y = total_amount / 1000000, color = party)) +
+  geom_line(linewidth = 1.1) +
+  labs(
+    y = "Total amount",
+    x = "Year",
+    title = "UK-connected PACs' Contributions to US political parties"
+  ) + 
+  scale_y_continuous(labels = dollar_format(prefix = "$", suffix = "M")) + 
+  scale_color_manual(name = "Party", values = c("Democrat" = "blue", "Republican" = "red")) 
 
 ```
+``` {r message=FALSE}
+#| label: Question 2 Add-On
+
+Mexico_pac <- updated_pac_data |>
+  filter(country_of_origin == "Mexico") |> group_by(year, party) |>
+  summarise(total_amount = sum(amount))
+
+#glimpse(Mexico_pac)
+
+ggplot(Mexico_pac, aes(x = year, y = total_amount / 1000000, color = party)) +
+  geom_line(linewidth = 1.1) +
+  labs(
+    y = "Total amount",
+    x = "Year",
+    title = "Mexico-connected PACs' Contributions to US political parties"
+  ) + 
+  scale_color_manual(name = "Party", values = c("Democrat" = "blue", "Republican" = "red")) +
+  scale_y_continuous(labels = dollar_format(prefix = "$", suffix = "M"))
+```
+
 
 ## 3 - Median housing prices in the US
 
