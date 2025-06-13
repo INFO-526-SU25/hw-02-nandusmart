@@ -264,7 +264,7 @@ ggplot(housing, aes(x = date, y = price)) +
 #| label: Question 3c
 
 housing_subset <- housing %>%
-  filter(date >= as.Date("2019-01-01") & date < as.Date("2020-07-01")) %>%
+  filter(date >= as.Date("2019-01-01") & date < as.Date("2020-12-31")) %>%
   mutate(
     year = year(date),
     quarter = case_when(
@@ -272,15 +272,19 @@ housing_subset <- housing %>%
       month(date) %in% 4:6 ~ "Q2",
       month(date) %in% 7:9 ~ "Q3",
       month(date) %in% 10:12 ~ "Q4"
+    ),
+    year_quarter = factor(
+      paste(year, quarter),
+      levels = c("2019 Q1", "2019 Q2", "2019 Q3", "2019 Q4",
+                 "2020 Q1", "2020 Q2", "2020 Q3", "2020 Q4")
     )
   )
 
 glimpse(housing_subset)
 
-ggplot(housing_subset, aes(x = interaction(year, quarter, sep = " "), y = price)) +
-  
+ggplot(housing_subset, aes(x = year_quarter, y = price, group = 1)) +
   geom_line(color = "royalblue3", size = 1.2) +
-  geom_point(color = "white", size = 2) +
+  geom_point(shape = 21, fill = "white", color = "royalblue3", size = 1, stroke = 1.2) +
   labs(
     title = "Median sales price of new houses in the U.S.",
     subtitle = "Not Seasonally adjusted",
