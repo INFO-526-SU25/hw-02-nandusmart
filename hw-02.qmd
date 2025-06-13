@@ -139,7 +139,7 @@ ggplot(Mexico_pac, aes(x = year, y = total_amount / 1000000, color = party)) +
   labs(
     y = "Total amount",
     x = "Year",
-    title = "Mexico-connected PACs' Contributions to US political parties"
+    title = "Mexico-connected PACs'  Contributions to US political parties"
   ) + 
   scale_color_manual(name = "Party", values = c("Democrat" = "blue", "Republican" = "red")) +
   scale_y_continuous(labels = dollar_format(prefix = "$", suffix = "M"))
