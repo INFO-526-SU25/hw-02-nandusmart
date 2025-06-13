@@ -152,6 +152,153 @@ ggplot(Mexico_pac, aes(x = year, y = total_amount / 1000000, color = party)) +
 Considered Mexico for the follow-up plot. Unlike UK, Mexico has been traditionally a low player in terms of $ value also seems, there is sharp increase for Republicansaround 2008-10 while also faing sharp decline in later years
 
 ## 3 - Median housing prices in the US
+``` {r}
+#| warning: false
+#| message: false
+#| label: Question 3
+
+housing <- read_csv("./data/median-housing.csv")
+recessions <- read_csv("./data/recessions.csv")
+
+housing <- housing |>
+  rename(date = DATE, price = MSPUS) |>
+  mutate(date = ymd(date)) 
+recessions <- recessions |>
+  rename(peak = Peak, trough = Trough) |>
+  mutate(
+    peak = ymd(peak),
+    trough = ymd(trough)
+  )
+
+y_breaks <- seq(0, 400000, by = 40000)
+# Plot
+ggplot(housing, aes(x = date, y = price)) +
+  geom_line(color = "royalblue3", linewidth = 1.2) +
+  scale_y_continuous(
+    labels = scales::comma,
+    breaks = y_breaks,  
+    limits = c(0, 400000)  
+  )+
+  scale_x_date(
+    limits = c(ymd("1963-01-01"), NA),
+    date_breaks = "5 years",
+    date_labels = "%Y"
+  )  +
+  labs(
+    title = "Median sales price of houses sold in the United States",
+    subtitle = "Not seasonally adjusted",
+    y = "Dollars",
+    x = NULL,
+    caption = "Sources: Census; HUD"
+  ) + 
+  theme_minimal() +
+  theme(
+    plot.title.position = "plot",
+    plot.title = element_text(size = 16, face = "bold",  hjust = 0),
+    
+    plot.subtitle = element_text(size = 12, hjust = 0),
+    plot.caption = element_text(size = 9),
+    panel.grid.major.x = element_blank(), 
+    panel.grid.minor.x = element_blank()   
+  )+
+  theme_minimal(base_size = 14) 
+```
+``` {r}
+#| warning: false
+#| message: false
+#| label: Question 3b
+
+colnames(housing) <- c("date", "price")
+colnames(recessions) <- c("start", "end")
+housing$date <- as.Date(housing$date)
+recessions$start <- as.Date(recessions$start)
+recessions$end <- as.Date(recessions$end)
+
+housing_range <- range(housing$date)
+
+recessions$in_range <- recessions$end >= housing_range[1] & recessions$start <= housing_range[2]
+
+recessions_in_range <- recessions[recessions$in_range, ]
+
+ggplot(housing, aes(x = date, y = price)) +
+  
+  # Add shaded rectangles for each recession
+  geom_rect(data = recessions_in_range,
+            aes(xmin = start, xmax = end, ymin = -Inf, ymax = Inf),
+            inherit.aes = FALSE, fill = "grey", alpha = 0.4) +
+  # Plot the line on top
+  geom_line(color = "royalblue3", size = 1) +
+  scale_y_continuous(
+    labels = scales::comma,
+    breaks = y_breaks,  
+    limits = c(0, 400000)  
+  ) +
+  scale_x_date(
+    limits = c(ymd("1963-01-01"), NA),
+    date_breaks = "5 years",
+    date_labels = "%Y"
+  )  +
+  labs(
+    title = "Median sales price of houses sold in the United States",
+    subtitle = "Not seasonally adjusted",
+    x = NULL,
+    y = "Dollars",
+    caption = "Shaded areas indicate U.S. recessions\nSources: Census; HUD"
+  ) +
+  theme_minimal() +
+  theme(
+    plot.title.position = "plot",
+    plot.title = element_text(size = 16, face = "bold",  hjust = 0),
+    plot.subtitle = element_text(size = 12, hjust = 0),
+    plot.caption = element_text(size = 9),
+    
+    panel.grid.major.x = element_blank(), 
+    panel.grid.minor.x = element_blank()  
+  )
+
+```
+
+``` {r}
+#| warning: false
+#| message: false
+#| label: Question 3c
+
+housing_subset <- housing %>%
+  filter(date >= as.Date("2019-01-01") & date < as.Date("2020-07-01")) %>%
+  mutate(
+    year = year(date),
+    quarter = case_when(
+      month(date) %in% 1:3 ~ "Q1",
+      month(date) %in% 4:6 ~ "Q2",
+      month(date) %in% 7:9 ~ "Q3",
+      month(date) %in% 10:12 ~ "Q4"
+    )
+  )
+
+glimpse(housing_subset)
+
+ggplot(housing_subset, aes(x = interaction(year, quarter, sep = " "), y = price)) +
+  
+  geom_line(color = "royalblue3", size = 1.2) +
+  geom_point(color = "white", size = 2) +
+  labs(
+    title = "Median sales price of new houses in the U.S.",
+    subtitle = "Not Seasonally adjusted",
+    x = NULL,
+    y = "Dollars"
+  ) +
+  scale_y_continuous(
+    limits = c(300000, 360000),
+    breaks = seq(300000, 360000, by = 20000),
+    labels = scales::comma
+  ) +
+  theme_minimal() +
+  theme(
+    plot.title = element_text(size = 16, face = "bold", hjust = 0),
+    plot.subtitle = element_text(size = 12, hjust = 0),
+    axis.text.x = element_text(angle = 45, hjust = 1)
+  )
+```
 
 ## 4 - Expect More. Plot More.
 
